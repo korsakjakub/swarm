@@ -55,7 +55,7 @@ class Swarm:
     def new_directions(self):
         self.mean_direction_of_neighbours()
         rng = np.random.default_rng()
-        noise = rng.random(1)
+        noise = rng.random(1)-0.5
         for i in range(len(self.birds)):
             self.birds[i].direction = self.birds[i].new_direction(self.neighbour_directions, noise)
         return self

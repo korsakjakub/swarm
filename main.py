@@ -12,10 +12,10 @@ from swarm import Swarm
 if __name__ == '__main__':
     dt = Config.dt
     sw = Swarm()
-    sw.get_initial_swarm(5000)
+    sw.get_initial_swarm(500)
     colormap = cm.viridis
     norm = Normalize()
-    for t_index in tqdm(range(200)):
+    for t_index in tqdm(range(400)):
         t = t_index * dt
         cur_sw = sw.new_positions()
         cur_dir = sw.new_directions()
@@ -36,4 +36,4 @@ if __name__ == '__main__':
         plt.title(f"t = {t_index}")
         plt.savefig(f"png/{str(t_index)}.png")
         plt.close()
-    os.system('cd png; files=$(ls *.png | sort -n -k1); convert -delay 20 $files ../animation.gif; rm *.png')
+    os.system('cd png; files=$(ls *.png | sort -n -k1); convert -delay 20 $files ../animation.gif')
