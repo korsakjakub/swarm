@@ -20,7 +20,10 @@ class Bird:
 
     def new_position(self) -> float:
         new = np.add(self.position,
-                     np.array([self.v0 * self.dt * np.cos(self.direction), self.v0 * self.dt * np.sin(self.direction)]).reshape((2,)))
+                     np.array(
+                         [self.v0 * self.dt * np.cos(self.direction),
+                          self.v0 * self.dt * np.sin(self.direction)]).reshape(
+                         (2,)))
         if new[0] > self.sim_dimensions[0]:
             new[0] -= self.sim_dimensions[0]
         if new[1] > self.sim_dimensions[0]:
@@ -29,7 +32,5 @@ class Bird:
             new[0] += self.sim_dimensions[0]
         if new[1] < 0.0:
             new[1] += self.sim_dimensions[0]
-        return new
-
-    def new_direction(self, neighbour_directions, noise) -> float:
-        return np.angle(np.sum(np.exp(neighbour_directions[self.index] * 1j))) + self.a * 2 * np.pi * noise
+        self.position = new
+        return self.position

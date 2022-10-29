@@ -3,7 +3,7 @@ import unittest
 
 import numpy as np
 
-from bird import Bird
+from prey import Prey
 from swarm import Swarm
 
 
@@ -16,7 +16,7 @@ class TestSwarm(unittest.TestCase):
     def test_get_nearest_neighbours(self):
         sw = Swarm(params={"r": 0.3})
         config = {"v0": 10}
-        sw.birds = [Bird(position=np.array([0.1 * float(i), 0.0]), direction=0, params=config) for i in range(5)]
+        sw.birds = [Prey(position=np.array([0.1 * float(i), 0.0]), direction=0, params=config) for i in range(5)]
         got = sw.get_nearest_neighbours()
         want = {0: [1, 2], 1: [0, 2, 3], 2: [4, 1, 3, 0], 3: [4, 2, 1], 4: [2, 3]}
         for i in range(len(got)):
@@ -24,9 +24,9 @@ class TestSwarm(unittest.TestCase):
                 logging.error("wanted: ", want[i], " got: ", got[i])
 
     def test_mean_direction_of_neighbours(self):
-        sw = Swarm(params={"r": 0.3})
+        sw = Swarm(params={"r": 0.5})
         config = {"v0": 10}
-        sw.birds = [Bird(position=np.array([0.1 * float(i), 0.1 * float(i)]), direction=1, params=config) for i in range(5)]
+        sw.birds = [Prey(position=np.array([0.1 * float(i), float(i)]), direction=1, params=config) for i in range(5)]
         mean_direction = sw.mean_direction_of_neighbours()
         print(mean_direction)
 

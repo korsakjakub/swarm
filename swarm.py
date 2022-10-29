@@ -1,19 +1,24 @@
 import numpy as np
+from numpy import linalg as la
 from numpy.random import default_rng
 from scipy.spatial import cKDTree
 
-from bird import Bird
 from config import Config
+from predator import Predator
+from prey import Prey
 
 
 class Swarm:
     def __init__(self, params=None):
+        self.kd_tree = None
         if params is None:
             params = {}
         self.neighbour_directions = None
         self.neighbours = None
         self.birds = []
+        self.predator = None
         self.r = params["r"] if "r" in params else Config.r
+        self.rb = params["rb"] if "rb" in params else Config.r
 
     def __str__(self):
         return f'{self.birds}'
@@ -23,7 +28,8 @@ class Swarm:
         rng = np.random.default_rng()
         pos = sim_dimensions * rng.random((amount, 2))
         theta = 2 * np.pi * rng.random((amount, 1))
-        self.birds = [Bird(pos[i], theta[i], index=i) for i in range(amount)]
+        self.birds = [Prey(pos[i], theta[i], index=i) for i in range(amount)]
+        self.predator = Predator(position=[dim / 2 for dim in sim_dimensions], direction=0.0)
         return self
 
     def get_nearest_neighbours(self):
@@ -36,6 +42,7 @@ class Swarm:
             neighbours[i].append(j)
             neighbours[j].append(i)
         self.neighbours = neighbours
+        self.kd_tree = kd_tree
         return neighbours
 
     def mean_direction_of_neighbours(self):
@@ -43,7 +50,7 @@ class Swarm:
         nearest_neighbours = self.get_nearest_neighbours()
         for key in nearest_neighbours:
             nnk = nearest_neighbours[key]
-            mean_directions[key] = np.sum([self.birds[nnk[i]].direction/len(nnk) for i in range(len(nnk))])
+            mean_directions[key] = np.sum([self.birds[nnk[i]].direction / len(nnk) for i in range(len(nnk))])
         self.neighbour_directions = mean_directions
         return mean_directions
 
@@ -55,10 +62,32 @@ class Swarm:
     def new_directions(self):
         self.mean_direction_of_neighbours()
         rng = np.random.default_rng()
-        noise = rng.random(1)-0.5
+        noise = rng.random(1) - 0.5
         for i in range(len(self.birds)):
             self.birds[i].direction = self.birds[i].new_direction(self.neighbour_directions, noise)
         return self
+
+    def new_predator_position(self):
+        self.predator.position = self.predator.new_position()
+        return self.predator.position
+
+    def new_predator_direction(self):
+        if self.kd_tree is not None:
+            birds = self.kd_tree.query_ball_point(self.predator.position, self.r)
+            if len(birds) < 1:
+                rng = np.random.default_rng()
+                self.predator.direction = 2 * np.pi * rng.random()
+                return self.predator.direction
+            nearest_prey = sorted(
+                [(self.birds[prey].position, la.norm(self.birds[prey].position - self.predator.position)) for prey in
+                 birds], key=lambda x: x[1])[0]
+            return self.predator.new_direction(nearest_prey[0])
+
+    def prey_escape_predator(self):
+        if self.kd_tree is not None:
+            birds = self.kd_tree.query_ball_point(self.predator.position, self.rb)
+            for bird in birds:
+                self.birds[bird].escape_predator(self.predator.direction)
 
     def get_positions(self):
         out = []
