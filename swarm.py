@@ -18,7 +18,7 @@ class Swarm:
         self.birds = []
         self.predator = None
         self.r = params["r"] if "r" in params else Config.r
-        self.rb = params["rb"] if "rb" in params else Config.r
+        self.rb = params["rb"] if "rb" in params else Config.rb
 
     def __str__(self):
         return f'{self.birds}'
@@ -27,7 +27,7 @@ class Swarm:
         sim_dimensions = Config.sim_dimensions
         rng = np.random.default_rng()
         pos = sim_dimensions * rng.random((amount, 2))
-        theta = 2 * np.pi * rng.random((amount, 1))
+        theta = np.array([2 * np.pi * rng.random((amount, 1))]).flatten()
         self.birds = [Prey(pos[i], theta[i], index=i) for i in range(amount)]
         self.predator = Predator(position=[dim / 2 for dim in sim_dimensions], direction=0.0)
         return self
@@ -73,11 +73,9 @@ class Swarm:
 
     def new_predator_direction(self):
         if self.kd_tree is not None:
-            birds = self.kd_tree.query_ball_point(self.predator.position, self.r)
+            birds = self.kd_tree.query_ball_point(self.predator.position, self.rb)
             if len(birds) < 1:
-                rng = np.random.default_rng()
-                self.predator.direction = 2 * np.pi * rng.random()
-                return self.predator.direction
+                return self.predator.new_direction(None)
             nearest_prey = sorted(
                 [(self.birds[prey].position, la.norm(self.birds[prey].position - self.predator.position)) for prey in
                  birds], key=lambda x: x[1])[0]
@@ -87,7 +85,7 @@ class Swarm:
         if self.kd_tree is not None:
             birds = self.kd_tree.query_ball_point(self.predator.position, self.rb)
             for bird in birds:
-                self.birds[bird].escape_predator(self.predator.direction)
+                self.birds[bird].escape_predator(self.predator.position)
 
     def get_positions(self):
         out = []
@@ -100,7 +98,7 @@ class Swarm:
         out = []
         birds = self.birds
         for bird in birds:
-            out.append(bird.direction)
+            out.append(float(bird.direction))
         return np.array(out)
 
 
