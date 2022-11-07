@@ -1,0 +1,1 @@
+docker run --rm -v $(pwd):/app -it -p 8080:80 --name swarm swarm

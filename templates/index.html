@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swarm</title>
+    <style type="text/css" media="screen">
+        img {
+            width: 80%;
+            height: auto;
+            max-width: 800px;
+        }
+        input {
+            width: 100px;
+        }
+        form {
+            display: grid
+        }
+    </style>
+</head>
+<body>
+<form method="post" action="/">
+    <label for="v0">Velocity: </label>
+    <input type="number" value="{{ v0 }}" id="v0" name="v0"/>
+    <label for="a">Noise: </label>
+    <input type="text" value="{{ a }}" id="a" name="a"/>
+    <label for="r">Predator's vision radius: </label>
+    <input type="number" value="{{ r }}" id="r" name="r"/>
+    <label for="rb">Birds' vision radius:</label>
+    <input type="number" value="{{ rb }}" id="rb" name="rb"/>
+    <label for="birds_amount">Amount of birds:</label>
+    <input type="number" value="{{ birds_amount }}" id="birds_amount" name="birds_amount"/>
+    <label for="time_range">Time range:</label>
+    <input type="number" value="{{ time_range }}" id="time_range" name="time_range"/>
+    <label for="include_predator">Include predator:</label>
+    <input type="checkbox" value="{{ include_predator }}" id="include_predator" name="include_predator"/>
+    <input type="submit" value="simulate" name="simulate"/>
+</form>
+<div>
+    <p>Swarm</p>
+    <img src="{{url_for('static', filename='animation.gif')}}" style="width:80%"/>
+</div>
+</body>
+</html>

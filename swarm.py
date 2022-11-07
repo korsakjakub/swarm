@@ -23,13 +23,14 @@ class Swarm:
     def __str__(self):
         return f'{self.birds}'
 
-    def get_initial_swarm(self, amount):
+    def get_initial_swarm(self, amount, include_predator=True):
         sim_dimensions = Config.sim_dimensions
         rng = np.random.default_rng()
         pos = sim_dimensions * rng.random((amount, 2))
         theta = np.array([2 * np.pi * rng.random((amount, 1))]).flatten()
         self.birds = [Prey(pos[i], theta[i], index=i) for i in range(amount)]
-        self.predator = Predator(position=[dim / 2 for dim in sim_dimensions], direction=0.0)
+        if include_predator:
+            self.predator = Predator(position=[dim / 2 for dim in sim_dimensions], direction=0.0)
         return self
 
     def get_nearest_neighbours(self):

@@ -8,8 +8,8 @@ from config import Config
 def plot(plot_data):
     prey_directions = plot_data['prey_directions']
     prey_positions = plot_data['prey_positions']
-    predator_position = plot_data['predator_position']
-    predator_direction = plot_data['predator_direction']
+    predator_position = plot_data['predator_position'] if 'predator_position' in plot_data else None
+    predator_direction = plot_data['predator_direction'] if 'predator_direction' in plot_data else None
     filename = plot_data['filename']
     plot_label = plot_data['plot_label']
 
@@ -28,8 +28,9 @@ def plot(plot_data):
     colors = colormap(norm(prey_directions))
     plt.quiver(prey_positions[0], prey_positions[1],
                np.cos(prey_directions), np.sin(prey_directions), color=colors, label=plot_label)
-    plt.quiver(predator_position[0], predator_position[1], np.cos(predator_direction),
-               np.sin(predator_direction), color='black')
+    if predator_position is not None and predator_direction is not None:
+        plt.quiver(predator_position[0], predator_position[1], np.cos(predator_direction),
+                   np.sin(predator_direction), color='black')
 
     plt.legend(loc="upper left")
     plt.savefig(filename)# , dpi=150)# , bbox_inches='tight', pad_inches=0)
