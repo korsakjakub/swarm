@@ -4,3 +4,4 @@ Project for [Computer modeling of complex systems](https://www.fuw.edu.pl/~piotr
 
 It can be used like a web app [swarm.korsak.xyz](https://swarm.korsak.xyz)
 
+![gif](/gif/animation.gif)
